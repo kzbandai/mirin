@@ -2,9 +2,6 @@
 - Updates manager by Go
 
 ```
-NAME:
-   mirin - Updates manager by Go
-
 USAGE:
    mirin [global options] command [command options] [arguments...]
 
