@@ -17,9 +17,7 @@ var (
 	version     = "0.0.1"
 )
 
-var s []cli.Command
-
-var commands = []Definition{
+var definitions = []Definition{
 	{
 		"anyenv",
 		[]string{"update"},
@@ -34,15 +32,11 @@ var commands = []Definition{
 	},
 	{
 		"gcloud",
-		[]string{"container", "update"},
+		[]string{"components", "update"},
 	},
 	{
 		"npm",
 		[]string{"install", "-g", "npm@latest"},
-	},
-	{
-		"yarn",
-		[]string{"self-update"},
 	},
 }
 
@@ -82,16 +76,12 @@ func (m *Mirin) setInfo() {
 }
 
 func (m *Mirin) setCommands() {
-	for _, d := range commands {
-		path, err := exec.LookPath(d.Name)
-		if err != nil {
-
-		}
-
-		s = append(s, cli.Command{
+	for _, d := range definitions {
+		path, _ := exec.LookPath(d.Name)
+		m.Commands = append(m.Commands, cli.Command{
 			Name: d.Name,
 			Action: func(c *cli.Context) error {
-				cmd := exec.Command(path, d.Args...)
+				cmd := exec.Command(path, getArgs(c.Command.Name)...)
 				cmd.Stdout = os.Stdout
 				cmd.Stderr = os.Stderr
 				cmd.Start()
@@ -100,6 +90,14 @@ func (m *Mirin) setCommands() {
 			},
 		})
 	}
+}
 
-	m.Commands = s
+func getArgs(s string) []string {
+	for _, d := range definitions {
+		if d.Name == s {
+			return d.Args
+		}
+	}
+
+	return nil
 }
