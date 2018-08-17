@@ -88,6 +88,7 @@ func (m *Mirin) setCommands() {
 
 				return cmd.Wait()
 			},
+			Usage: getUsage(getArgs(d.Name)),
 		})
 	}
 }
@@ -100,4 +101,12 @@ func getArgs(s string) []string {
 	}
 
 	return nil
+}
+
+func getUsage(ss []string) string {
+	var r string
+	for _, s := range ss {
+		r += s + " "
+	}
+	return r
 }
