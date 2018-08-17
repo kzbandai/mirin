@@ -12,11 +12,11 @@ AUTHOR:
    kzbandai
 
 COMMANDS:
-     anyenv
-     brew
-     composer
-     gcloud
-     npm
+     anyenv    update
+     brew      upgrade
+     composer  self-update
+     gcloud    components update
+     npm       install -g npm@latest
 
 GLOBAL OPTIONS:
    --version, -v  print the version
