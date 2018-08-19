@@ -21,3 +21,7 @@ args = ["update", "--system"]
 [[definition]]
 name = "npm"
 args = ["install", "-g", "npm@latest"]
+
+[[definition]]
+name = "pip"
+args = ["install", "--upgrade", "pip"]
