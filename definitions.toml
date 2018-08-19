@@ -1,0 +1,19 @@
+[[definition]]
+name = "anyenv"
+args = ["update"]
+
+[[definition]]
+name = "brew"
+args = ["upgrade"]
+
+[[definition]]
+name = "composer"
+args = ["self-update"]
+
+[[definition]]
+name = "gcloud"
+args = ["components", "update"]
+
+[[definition]]
+name = "npm"
+args = ["install", "-g", "npm@latest"]

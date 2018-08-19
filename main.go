@@ -3,7 +3,9 @@ package main
 import (
 	"os"
 	"os/exec"
+	"strings"
 
+	"github.com/BurntSushi/toml"
 	"github.com/urfave/cli"
 )
 
@@ -17,43 +19,26 @@ var (
 	version     = "0.0.1"
 )
 
-var definitions = []Definition{
-	{
-		"anyenv",
-		[]string{"update"},
-	},
-	{
-		"brew",
-		[]string{"upgrade"},
-	},
-	{
-		"composer",
-		[]string{"self-update"},
-	},
-	{
-		"gcloud",
-		[]string{"components", "update"},
-	},
-	{
-		"npm",
-		[]string{"install", "-g", "npm@latest"},
-	},
+type Definitions struct {
+	Definitions []Definition `toml:"definition"`
 }
 
 type Definition struct {
-	Name string
-	Args []string
+	Name string   `toml:"name"`
+	Args []string `toml:"args"`
 }
 
 type Mirin struct {
 	*cli.App
+	Definitions []Definition
 }
 
 func main() {
 	app := newMirin()
 
 	app.setInfo()
-	app.setCommands()
+	app.loadDefinitions()
+	app.setDefinitions()
 
 	err := app.Run(os.Args)
 	if err != nil {
@@ -62,7 +47,9 @@ func main() {
 }
 
 func newMirin() *Mirin {
-	return &Mirin{cli.NewApp()}
+	return &Mirin{
+		App: cli.NewApp(),
+	}
 }
 
 func (m *Mirin) setInfo() {
@@ -75,38 +62,35 @@ func (m *Mirin) setInfo() {
 	m.Version = version
 }
 
-func (m *Mirin) setCommands() {
-	for _, d := range definitions {
+func (m *Mirin) loadDefinitions() {
+	var d Definitions
+	toml.DecodeFile("definitions.toml", &d)
+
+	m.Definitions = d.Definitions
+}
+
+func (m *Mirin) setDefinitions() {
+	for _, d := range m.Definitions {
 		path, _ := exec.LookPath(d.Name)
 		m.Commands = append(m.Commands, cli.Command{
 			Name: d.Name,
 			Action: func(c *cli.Context) error {
-				cmd := exec.Command(path, getArgs(c.Command.Name)...)
+				cmd := exec.Command(path, getArgs(c)...)
 				cmd.Stdout = os.Stdout
 				cmd.Stderr = os.Stderr
 				cmd.Start()
 
 				return cmd.Wait()
 			},
-			Usage: getUsage(getArgs(d.Name)),
+			Usage: getUsage(d.Args),
 		})
 	}
 }
 
-func getArgs(s string) []string {
-	for _, d := range definitions {
-		if d.Name == s {
-			return d.Args
-		}
-	}
-
-	return nil
+func getArgs(c *cli.Context) []string {
+	return strings.Split(c.Command.Usage, " ")
 }
 
 func getUsage(ss []string) string {
-	var r string
-	for _, s := range ss {
-		r += s + " "
-	}
-	return r
+	return strings.Join(ss, " ")
 }
