@@ -16,6 +16,7 @@ var (
 	hideHelp    = true
 	name        = "mirin"
 	usage       = "Updates manager by Go"
+	usageText   = "mirin command"
 	version     = "0.0.1"
 )
 
@@ -59,6 +60,7 @@ func (m *Mirin) setInfo() {
 	m.HideHelp = hideHelp
 	m.Name = name
 	m.Usage = usage
+	m.UsageText = usageText
 	m.Version = version
 }
 
