@@ -15,5 +15,9 @@ name = "gcloud"
 args = ["components", "update"]
 
 [[definition]]
+name = "gem"
+args = ["update", "--system"]
+
+[[definition]]
 name = "npm"
 args = ["install", "-g", "npm@latest"]
